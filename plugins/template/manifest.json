@@ -1,14 +1,14 @@
 {
-    "name": "Template Plugin",
-    "description": "A plugin for use as a template.",
+    "name": "ThemeRepo",
+    "description": "Browse all vendetta/revenge themes.",
     "authors": [
         {
-            "name": "You!",
-            "id": "YOUR_ID_HERE"
+            "name": "Rico040",
+            "id": "619474349845643275"
         }
     ],
     "main": "src/index.ts",
     "vendetta": {
-        "icon": "ic_badge_staff"
+        "icon": "ic_paint_brush"
     }
 }
