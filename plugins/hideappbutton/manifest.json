@@ -1,11 +1,7 @@
 {
     "name": "HideAppButton",
-    "description": "Hides app button from chatbox. Mostly based on pylix's HideGiftButton.",
+    "description": "Hides app button from chatbox.",
     "authors": [
-        {
-            "name": "pylix",
-            "id": "492949202121261067"
-        },
         {
             "name": "Rico040",
             "id": "619474349845643275"
