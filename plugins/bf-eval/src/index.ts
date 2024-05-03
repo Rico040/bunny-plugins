@@ -44,14 +44,15 @@ export default {
 };
 
 async function pcommand(args, ctx) {
-    const program = args[0].value;
+    const options = new Map(args.map((option) => [option.name, option]));
+    const program = options.get("code").value;
     const bf = new Brainfuck(program);
     let out = "";
 
     bf.on("out", o => out += o);
     // bf.on("done", () => console.log(out));
     bf.init();
-    if (args[1].value === false) {
+    if (options.get("ephemeral")?.value === false) {
         return { content: out };
     } else {
         sendBotMessage(ctx.channel.id, out);
