@@ -1,0 +1,18 @@
+{
+    "name": "Freemoji",
+    "description": "Allows you to use Nitro emoji without Nitro.",
+    "authors": [
+        {
+            "name": "maisy",
+            "id": "257109471589957632"
+        },
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "img_nitro_emojis"
+    }
+}
