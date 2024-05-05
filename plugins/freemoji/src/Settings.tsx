@@ -14,7 +14,7 @@ const sizeOptions = {
     Jumbo: 128,
 }
 
-const previewUri = "https://cdn.discordapp.com/emojis/1105406110724268075.webp";
+const previewUri = "https://cdn.discordapp.com/emojis/926602689213767680.webp";
 
 export default () => {
     useProxy(storage);

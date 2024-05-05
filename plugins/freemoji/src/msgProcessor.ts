@@ -23,10 +23,15 @@ function extractUnusableEmojis(messageString: string, size: number) {
 			// Remove emote from original msg
 			messageString = messageString.replace(emojiString[0], "");
 			// Add to emotes to send
-			emojiUrls.push(`${emoji.url.split("?")[0]}?size=${size}`);
+			// Hacky fix, someone on discord removed url property for emoji
+			if (emoji.animated){
+				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.gif?size=${size}`);
+			} else {
+				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.webp?size=${size}`);
+			}
 		}
 	}
-
+	
 	return { 
         newContent: messageString.trim(),
         extractedEmojis: emojiUrls,
