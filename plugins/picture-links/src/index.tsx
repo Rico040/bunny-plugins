@@ -26,27 +26,27 @@ async function openModal(src: string, event) {
 
   hideActionSheet(); // hide user sheet
   openMediaModal({
-      initialSources: [{
-          uri: src,
-          sourceURI: src,
-          width,
-          height,
-          guildId: getGuildId(),
-          channelId: getChannelId(),
-      }],
-      initialIndex: 0,
-      originLayout: {
-        width: 0, // this would ideally be the size of the small pfp but this proved very hard to implement
-        height: 0,
-        x: event.pageX,
-        y: event.pageY,
-        resizeMode: "fill",
-      }
+    initialSources: [{
+      uri: src,
+      sourceURI: src,
+      width,
+      height,
+      guildId: getGuildId(),
+      channelId: getChannelId(),
+    }],
+    initialIndex: 0,
+    originLayout: {
+      width: 0, // this would ideally be the size of the small pfp but this proved very hard to implement
+      height: 0,
+      x: event.pageX,
+      y: event.pageY,
+      resizeMode: "fill",
+    }
   });
 }
 
 const unpatchAvatar = after("default", HeaderAvatar, ([{ user, style, guildId }], res) => {
-  const guildSpecific = user.guildMemberAvatars?.[guildId] && `https://cdn.discordapp.com/guilds/${guildId}/users/${user.id}/avatars/${user.guildMemberAvatars[guildId]}.png`;
+  const guildSpecific = user.guildMemberAvatars?.[guildId] && `https://cdn.discordapp.com/guilds/${guildId}/users/${user.id}/avatars/${user.guildMemberAvatars[guildId]}.png?size=4096`;
   const image = user?.getAvatarURL?.(false, 4096, true);
   if (!image) return res;
 
@@ -81,7 +81,7 @@ const unpatchBanner = after("default", ProfileBanner, ([{ bannerSource }], res) 
 //   if (this.props?.size !== "XLARGE") return;
 //   const url = this.props?.guild?.getIconURL?.(4096);
 //   if (!url) return res;
-
+//
 //   return (
 //     <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
 //       {res}
@@ -92,5 +92,5 @@ const unpatchBanner = after("default", ProfileBanner, ([{ bannerSource }], res) 
 export function onUnload() {
   unpatchAvatar();
   unpatchBanner();
-//   unpatchGuildIcon();
+//  unpatchGuildIcon();
 }
