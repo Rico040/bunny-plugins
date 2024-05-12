@@ -5,7 +5,7 @@ import { ReactNative } from "@vendetta/metro/common";
 const { Pressable } = findByProps("Button", "Text", "View");
 const ProfileBanner = findByName("ProfileBanner", false);
 const HeaderAvatar = findByName("HeaderAvatar", false);
-// const GuildIcon = findByName("GuildIcon");
+const GuildIcon = findByName("GuildIcon", false);
 const { openMediaModal } = findByProps("openMediaModal");
 const { hideActionSheet } = findByProps("hideActionSheet");
 const { getChannelId } = findByStoreName("SelectedChannelStore");
@@ -77,20 +77,19 @@ const unpatchBanner = after("default", ProfileBanner, ([{ bannerSource }], res) 
   return <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>{res}</Pressable>;
 });
 
-// const unpatchGuildIcon = after("draw", GuildIcon.prototype, function (_, res) {
-//   if (this.props?.size !== "XLARGE") return;
-//   const url = this.props?.guild?.getIconURL?.(4096);
-//   if (!url) return res;
-//
-//   return (
-//     <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
-//       {res}
-//     </Pressable>
-//   );
-// });
+const unpatchGuildIcon = after("default", GuildIcon, ([{ size, guild }], res) => {
+  if (size !== "XLARGE") return;
+  const url = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=4096`
+
+  return (
+    <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
+      {res}
+    </Pressable>
+  );
+});
 
 export function onUnload() {
   unpatchAvatar();
   unpatchBanner();
-//  unpatchGuildIcon();
+  unpatchGuildIcon();
 }
