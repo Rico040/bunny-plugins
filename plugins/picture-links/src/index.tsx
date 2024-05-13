@@ -5,7 +5,7 @@ import { ReactNative } from "@vendetta/metro/common";
 const { Pressable } = findByProps("Button", "Text", "View");
 const ProfileBanner = findByName("ProfileBanner", false);
 const HeaderAvatar = findByName("HeaderAvatar", false);
-const GuildIcon = findByName("GuildName", false)
+const GuildIcon = findByName("GuildIcon", false)
 const { openMediaModal } = findByProps("openMediaModal");
 const { hideActionSheet } = findByProps("hideActionSheet");
 const { getChannelId } = findByStoreName("SelectedChannelStore");
