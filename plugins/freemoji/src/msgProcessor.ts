@@ -27,7 +27,7 @@ function extractUnusableEmojis(messageString: string, size: number) {
 			var ext = "webp"
 			if (emoji.animated){ ext = "gif"; }
 			if (storage.hyperlink === true) {
-				emojiUrls.push(`[:${emojiString[1]}:](https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size})`);
+				emojiUrls.push(`[${emojiString[1]}](https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}&quality=lossless&name=${emojiString[1]})`);
 			} else {
 				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}`);
 			}
