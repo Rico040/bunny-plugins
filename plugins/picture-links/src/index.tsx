@@ -78,7 +78,7 @@ const unpatchBanner = after("default", ProfileBanner, ([{ bannerSource }], res) 
 });
 
 var unpatchGuildIcon = after("default", GuildIcon, ([{ size, guild }], res) => {
-    if (size !== "XLARGE") return;
+    if (size !== "XLARGE" || guild?.icon == null) return;
     var ext = "png"
     if (guild?.icon.includes('a_')) { ext = "gif"; }
     const url = `https://cdn.discordapp.com/icons/${guild?.id}/${guild?.icon}.${ext}?size=4096`
