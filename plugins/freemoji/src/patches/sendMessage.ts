@@ -1,5 +1,5 @@
 import { findByProps } from "@vendetta/metro";
-import { before } from "../vpatcher";
+import { before } from "@vendetta/patcher";
 import modifyIfNeeded from "../msgProcessor";
 
 const messageModule = findByProps("sendMessage", "receiveMessage");
