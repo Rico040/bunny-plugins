@@ -1,6 +1,7 @@
 import { findByProps, findByName, findByStoreName } from "@vendetta/metro";
 import { after } from "@vendetta/patcher";
 import { ReactNative } from "@vendetta/metro/common";
+import { storage } from "@vendetta/plugin";
 
 const { Pressable } = findByProps("Button", "Text", "View");
 const ProfileBanner = findByName("ProfileBanner", false);
@@ -12,17 +13,17 @@ const { getChannelId } = findByStoreName("SelectedChannelStore");
 const { getGuildId } = findByStoreName("SelectedGuildStore");
 
 function getImageSize(uri: string): Promise<{width: number, height: number}> {
-  return new Promise((resolve, reject) => {
-    ReactNative.Image.getSize(
-      uri,
-      (width, height) => resolve({width, height}),
-      (error) => reject(error)
-    );
-  });
+    return new Promise((resolve, reject) => {
+        ReactNative.Image.getSize(
+            uri,
+            (width, height) => resolve({width, height}),
+            (error) => reject(error)
+        );
+    });
 }
 
-async function openModal(src: string, event) {
-  const { width, height } = await getImageSize(src);
+export async function openModal(src: string, event) {
+    const { width, height } = await getImageSize(src);
 
   hideActionSheet(); // hide user sheet
   openMediaModal({
@@ -78,8 +79,10 @@ const unpatchBanner = after("default", ProfileBanner, ([{ bannerSource }], res) 
 });
 
 const unpatchGuildIcon = after("default", GuildIcon, ([{ size, guild }], res) => {
-  if (size !== "XLARGE") return;
-  const url = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=4096`
+    if (size !== "XLARGE" || guild?.icon == null) return;
+    var ext = "png"
+    if (guild?.icon.includes('a_')) { ext = "gif"; }
+    const url = `https://cdn.discordapp.com/icons/${guild?.id}/${guild?.icon}.${ext}?size=4096`
 
   return (
     <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
@@ -88,8 +91,16 @@ const unpatchGuildIcon = after("default", GuildIcon, ([{ size, guild }], res) =>
   );
 });
 
+export function onLoad() {
+    if (typeof findByName("GuildIcon").prototype.render !== "undefined") {
+        storage.compatMode = true
+        console.log("Oldcord detected, applying workaround")
+    } else {
+        storage.compatMode = false
+    }
+}
 export function onUnload() {
-  unpatchAvatar();
-  unpatchBanner();
-  unpatchGuildIcon();
+    unpatchAvatar();
+    unpatchBanner();
+    // unpatchGuildIcon();
 }
