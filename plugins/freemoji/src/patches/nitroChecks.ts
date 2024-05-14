@@ -1,5 +1,5 @@
 import { findByProps } from "@vendetta/metro";
-import { instead } from "../vpatcher";
+import { instead } from "@vendetta/patcher";
 
 const nitroInfo = findByProps("canUseEmojisEverywhere");
 
