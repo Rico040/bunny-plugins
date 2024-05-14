@@ -24,10 +24,12 @@ function extractUnusableEmojis(messageString: string, size: number) {
 			messageString = messageString.replace(emojiString[0], "");
 			// Add to emotes to send
 			// Hacky fix, someone on discord removed url property for emoji
-			if (emoji.animated){
-				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.gif?size=${size}`);
+			var ext = "webp"
+			if (emoji.animated){ ext = "gif"; }
+			if (storage.hyperlink === true) {
+				emojiUrls.push(`[:${emojiString[1]}:](https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size})`);
 			} else {
-				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.webp?size=${size}`);
+				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}`);
 			}
 		}
 	}
@@ -46,7 +48,13 @@ export default function modifyIfNeeded(msg: Message) {
 
 	msg.content = newContent;
 
-	if (extractedEmojis.length > 0) msg.content += "\n" + extractedEmojis.join("\n");
+	if (extractedEmojis.length > 0) {
+		if (storage.hyperlink === true) { 
+			msg.content += " " + extractedEmojis.join(" "); 
+		} else { 
+			msg.content += "\n" + extractedEmojis.join("\n"); 
+		}
+	}
 
 	// Set invalidEmojis to empty to prevent Discord yelling to you about you not having nitro
 	msg.invalidEmojis = [];

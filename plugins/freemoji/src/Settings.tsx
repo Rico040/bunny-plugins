@@ -1,9 +1,10 @@
 import { ReactNative as RN } from "@vendetta/metro/common";
 import { Forms } from "@vendetta/ui/components";
 import { useProxy } from "@vendetta/storage";
+import { getAssetIDByName } from "@vendetta/ui/assets"
 import { storage } from "@vendetta/plugin";
 
-const { FormSection, FormRadioRow } = Forms;
+const { FormSection, FormRadioRow, FormSwitchRow } = Forms;
 
 const sizeOptions = {
     Tiny: 16,
@@ -21,7 +22,17 @@ export default () => {
 
     return (
         <RN.ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
-            <FormSection title="Emoji Size" titleStyleType="no_border">
+            <FormSection title="Settings" titleStyleType="no_border">
+                <FormSwitchRow
+                    label="Hyperlink emoji"
+                    subLabel="Hyperlinks emoji link to be less distractive"
+                    leading={<Forms.FormIcon source={getAssetIDByName("ic_link")} />}
+                    value={storage.hyperlink}
+                    onValueChange={ () => {storage.hyperlink = !storage.hyperlink;}}
+                    note=""
+                />
+            </FormSection>
+            <FormSection title="Emoji Size" >
                 {Object.entries(sizeOptions).map(([name, size]) => <FormRadioRow
                     label={name}
                     subLabel={size}

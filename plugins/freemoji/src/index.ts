@@ -4,6 +4,7 @@ import sendMessage from "./patches/sendMessage";
 
 // Default settings
 storage.emojiSize ??= 48;
+storage.hyperlink ??= true;
 
 // Migration code, used to be string containing a number but is now just a number
 if (typeof storage.emojiSize === "string") storage.emojiSize = parseInt(storage.emojiSize);
