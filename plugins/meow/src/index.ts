@@ -6,7 +6,7 @@ const messageModule = findByProps("sendMessage", "receiveMessage");
 const uploadModule = findByProps("uploadLocalFiles");
 const hasEmotesRegex = /<a?:(\w+):(\d+)>/i;
 
-const catSounds = ['meow', 'nya', 'mrrp', 'mrow']
+const catSounds = ['meow', 'nya', 'mrrp', 'mrow', '🐱']
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
