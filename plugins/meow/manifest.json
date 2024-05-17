@@ -1,0 +1,14 @@
+{
+    "name": "meow",
+    "description": "meow",
+    "authors": [
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "img_account_sync_github_white"
+    }
+}
