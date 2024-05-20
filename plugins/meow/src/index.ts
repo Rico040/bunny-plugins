@@ -16,7 +16,7 @@ function getRandomInt(min, max) {
 
 function modify(msg: Message) {
     var newContent = msg.content
-    if (getRandomInt(1,2) === 1 || msg.content.match(hasEmotesRegex)) {
+    if (getRandomInt(1,4) === 1 || msg.content.match(hasEmotesRegex)) {
         newContent = msg.content.replaceAll(/<a?:(\w+):(\d+)>/gi, '🐱');
     }
     if (getRandomInt(1,8) === 1) {
@@ -29,7 +29,7 @@ function modify(msg: Message) {
         let words = newContent.split(" ")
         let randomIndex = Math.floor(Math.random() * words.length);
         words.splice(randomIndex, 0, catSounds[Math.floor(Math.random() * catSounds.length)])
-        if (getRandomInt(1,2) === 1) words[randomIndex] += '~'
+        if (getRandomInt(1,3) === 1) words[randomIndex] += '~'
         newContent = words.join(" ")
         if (getRandomInt(1,2) === 1) newContent += '~'
     }
