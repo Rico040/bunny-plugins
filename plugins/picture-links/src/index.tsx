@@ -5,7 +5,6 @@ import { ReactNative } from "@vendetta/metro/common";
 const { Pressable } = findByProps("Button", "Text", "View");
 const ProfileBanner = findByName("ProfileBanner", false);
 const HeaderAvatar = findByName("HeaderAvatar", false);
-const GuildIcon = findByName("GuildIcon", false)
 const { openMediaModal } = findByProps("openMediaModal");
 const { hideActionSheet } = findByProps("hideActionSheet");
 const { getChannelId } = findByStoreName("SelectedChannelStore");
@@ -77,19 +76,38 @@ const unpatchBanner = after("default", ProfileBanner, ([{ bannerSource }], res) 
     return <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>{res}</Pressable>;
 });
 
-var unpatchGuildIcon = after("default", GuildIcon, ([{ size, guild }], res) => {
-    if (size !== "XLARGE" || guild?.icon == null) return;
-    var ext = "png"
-    if (guild?.icon.includes('a_')) { ext = "gif"; }
-    const url = `https://cdn.discordapp.com/icons/${guild?.id}/${guild?.icon}.${ext}?size=4096`
+var unpatchGuildIcon
 
-    return (
-        <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
-            {res}
-        </Pressable>
-    );
-});
-
+if (typeof findByName("GuildIcon").prototype.render !== "undefined") {
+    // Compatibility patch with older versions
+    const GuildIcon = findByName("GuildIcon");
+    unpatchGuildIcon = after("render", GuildIcon.prototype, function (_, res) {
+        if (this.props?.size !== "XLARGE") return;
+        const url = this.props?.guild?.getIconURL?.(4096);
+        if (!url) return res;
+      
+        return (
+            <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
+                {res}
+            </Pressable>
+        );
+    });
+} else {
+    // Patch for newer versions
+    const GuildIcon = findByName("GuildIcon", false);
+    unpatchGuildIcon = after("default", GuildIcon, ([{ size, guild }], res) => {
+        if (size !== "XLARGE" || guild?.icon == null) return;
+        var ext = "png"
+        if (guild?.icon.includes('a_')) { ext = "gif"; }
+        const url = `https://cdn.discordapp.com/icons/${guild?.id}/${guild?.icon}.${ext}?size=4096`
+    
+        return (
+            <Pressable onPress={({ nativeEvent }) => openModal(url, nativeEvent)}>
+                {res}
+            </Pressable>
+        );
+    });
+}
 
 export function onUnload() {
     unpatchAvatar();
