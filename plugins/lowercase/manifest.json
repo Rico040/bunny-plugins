@@ -1,0 +1,14 @@
+{
+    "name": "Lowercase",
+    "description": "Makes everything lowercase.",
+    "authors": [
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "ic_add_text"
+    }
+}

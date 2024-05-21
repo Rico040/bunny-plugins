@@ -1,0 +1,18 @@
+{
+    "name": "Custom Timestamps",
+    "description": "Customize the format of timestamps in chat.",
+    "authors": [
+        {
+            "name": "Fiery",
+            "id": "890228870559698955"
+        },
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "clock"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "BlueQuote",
+    "description": "Brings Bluecord-style quote.",
+    "authors": [
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "ic_channels_24px"
+    }
+}
