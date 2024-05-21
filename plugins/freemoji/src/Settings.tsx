@@ -31,6 +31,14 @@ export default () => {
                     onValueChange={ () => {storage.hyperlink = !storage.hyperlink;}}
                     note=""
                 />
+                <FormSwitchRow
+                    label="Force Freemoji"
+                    subLabel="Explicitly force Freemoji even if you have nitro (useful for testing)"
+                    leading={<Forms.FormIcon source={getAssetIDByName("img_nitro_emojis")} />}
+                    value={storage.forceMoji}
+                    onValueChange={ () => {storage.forceMoji = !storage.forceMoji;}}
+                    note=""
+                />
             </FormSection>
             <FormSection title="Emoji Size" >
                 {Object.entries(sizeOptions).map(([name, size]) => <FormRadioRow
