@@ -1,0 +1,18 @@
+{
+    "name": "Always Animate",
+    "description": "Always animates guild icons and avatars.",
+    "authors": [
+        {
+            "name": "Cynosphere",
+            "id": "150745989836308480"
+        },
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "icon-qs-gifs"
+    }
+}
