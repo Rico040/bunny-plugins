@@ -46,12 +46,10 @@ async function openModal(src: string, event) {
 
 const unpatchAvatar = after("default", HeaderAvatar, ([{ user, style, guildId }], res) => {
     var ext = "png";
-    if (user.guildMemberAvatars[guildId].includes("a_")) {ext = "gif";}
+    if (user.guildMemberAvatars?.[guildId].includes("a_")) { ext = "gif"; }
     const guildSpecific = user.guildMemberAvatars?.[guildId] && `https://cdn.discordapp.com/guilds/${guildId}/users/${user.id}/avatars/${user.guildMemberAvatars[guildId]}.${ext}?size=4096`;
     const image = user?.getAvatarURL?.(false, 4096, true);
     if (!image) return res;
-
-    console.log("Guild Specific Avatar: ", guildSpecific);
 
     const url =
         typeof image === "number"
