@@ -41,7 +41,8 @@ function extractUnusableEmojis(messageString: string, size: number) {
 }
 
 export default function modifyIfNeeded(msg: Message) {
-	if (!msg.content.match(hasEmotesRegex) && (!storage.haveNitro || !storage.forceMoji)) return;
+	if (!msg.content.match(hasEmotesRegex)) return;
+	if (!storage.forceMoji) { if (storage.haveNitro) return; }
 
 	// Find all emojis from the captured message string and return object with emojiURLS and content
 	const { newContent, extractedEmojis } = extractUnusableEmojis(msg.content, storage.emojiSize);

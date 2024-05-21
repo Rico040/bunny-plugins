@@ -6,7 +6,7 @@ import sendMessage from "./patches/sendMessage";
 // Default settings
 storage.emojiSize ??= 48;
 storage.hyperlink ??= true;
-storage.haveNitro ??= findByStoreName("UserStore").getCurrentUser()?.purchasedFlags != 0;
+storage.haveNitro ??= findByStoreName("UserStore").getCurrentUser()?.premiumType !== null;
 storage.forceMoji ??= false;
 
 // Migration code, used to be string containing a number but is now just a number
