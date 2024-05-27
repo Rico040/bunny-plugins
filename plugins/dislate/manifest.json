@@ -1,0 +1,22 @@
+{
+    "name": "Dislate Lite",
+    "description": "Translates text into a desired language.",
+    "authors": [
+        {
+            "name": "Acquite <3",
+            "id": "581573474296791211"
+        },
+        {
+            "name": "sapphire :>",
+            "id": "757982547861962752"
+        },
+        {
+        	"name": "Rico040 ;)",
+        	"id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "ic_locale_24px"
+    }
+}
