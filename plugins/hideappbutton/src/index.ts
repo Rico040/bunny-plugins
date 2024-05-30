@@ -1,15 +1,20 @@
-import { logger } from "@vendetta";
 import { findByName } from "@vendetta/metro";
 import { after } from "@vendetta/patcher";
+import { getAssetIDByName } from "@vendetta/ui/assets";
+import { findInReactTree } from "@vendetta/utils";
 
 const ChatInput = findByName("ChatInput");
 
-const patch = after("render", ChatInput.prototype, (...args) => {
-  try {
-    args[1].props.children[2].props.children.props.children[1].props.isAppLauncherEnabled = false;
-  } catch (e) {
-    logger.error("Failed to hide voice message button", e);
-  }
-});
+let unpatch: () => boolean;
 
-export const onUnload = () => patch();
+export default {
+    onLoad() {
+        const blockList = ["ic_thread_normal_24px", "AppsIcon"].map(n => getAssetIDByName(n));
+        unpatch = after("render", ChatInput.prototype, (_, ret) => {
+            const input = findInReactTree(ret, t => "forceAnimateButtons" in t.props && t.props.actions);
+            input.props.actions = input.props.actions.filter(a => !blockList.includes(a.source));
+        });
+    },
+    onUnload: unpatch
+};
+
