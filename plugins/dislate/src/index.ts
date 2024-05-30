@@ -6,9 +6,11 @@ import Settings from "./settings"
 export const settings: {
     source_lang?: string
     target_lang?: string
+    translator?: number
 } = storage
 
 settings.target_lang ??= "EN"
+settings.translator ??= 0
 
 let patches = []
 

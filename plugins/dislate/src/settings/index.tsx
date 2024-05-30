@@ -7,6 +7,7 @@ import { useProxy } from "@vendetta/storage"
 
 import { settings } from ".."
 import TargetLang from "./TargetLang"
+import TranslatorPage from "./TranslatorPage"
 
 const { ScrollView, Text } = ReactNative
 const { FormRow } = Forms
@@ -37,6 +38,16 @@ export default () => {
                 onPress={() => navigation.push("VendettaCustomPage", {
                     title: "Translate to",
                     render: TargetLang,
+                })}
+            />
+            <FormRow
+                label={"Translator"}
+                subLabel={settings.translator ? "Google Translate" : "DeepL"}
+                leading={<FormRow.Icon source={getAssetIDByName("ic_locale_24px")} />}
+                trailing={() => <FormRow.Arrow />}
+                onPress={() => navigation.push("VendettaCustomPage", {
+                    title: "Translator",
+                    render: TranslatorPage,
                 })}
             />
 

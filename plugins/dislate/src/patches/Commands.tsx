@@ -6,12 +6,13 @@ import { getAssetIDByName } from "@vendetta/ui/assets"
 import { Codeblock } from "@vendetta/ui/components"
 import { showConfirmationAlert } from "@vendetta/ui/alerts"
 import { findByProps } from "@vendetta/metro"
+import { settings } from ".."
 
-import lang from "../lang"
-import { DeepL } from "../api"
+import Lang from "../lang"
+import { DeepL, GTranslate } from "../api"
 
 const ClydeUtils = findByProps("sendBotMessage")
-const langOptions = Object.entries(lang).map(([key, value]) => ({
+const langOptions = Object.entries(Lang).map(([key, value]) => ({
     name: key,
     displayName: key,
     value: value
@@ -20,8 +21,8 @@ const langOptions = Object.entries(lang).map(([key, value]) => ({
 export default () => registerCommand({
     name: "translate",
     displayName: "translate",
-    description: "Send a message using Dislate in any language chosen, using the DeepL Translate API.",
-    displayDescription: "Send a message using Dislate in any language chosen, using the DeepL Translate API.",
+    description: "Send a message using Dislate in any language chosen.",
+    displayDescription: "Send a message using Dislate in any language chosen.",
     applicationId: "-1",
     type: ApplicationCommandType.CHAT as number,
     inputType: ApplicationCommandInputType.BUILT_IN_TEXT as number,
@@ -48,7 +49,13 @@ export default () => registerCommand({
     async execute(args, ctx) {
         const [text, lang] = args
         try {
-            const content = await DeepL.translate(text.value, null, lang.value)
+            var content
+            switch(settings.translator) {
+                case 0:
+                    content = await DeepL.translate(text.value, null, lang.value)
+                case 1:
+                    content = await GTranslate.translate(text.value, null, lang.value)
+            }
             return await new Promise((resolve): void => showConfirmationAlert({
                 title: "Are you sure you want to send it?",
                 content: (

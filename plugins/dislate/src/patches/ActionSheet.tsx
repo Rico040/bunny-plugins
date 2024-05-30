@@ -7,7 +7,7 @@ import { Forms } from "@vendetta/ui/components"
 import { findInReactTree } from "@vendetta/utils"
 import { settings } from ".."
 
-import { DeepL } from "../api"
+import { DeepL, GTranslate } from "../api"
 import { showToast } from "@vendetta/ui/toasts"
 import { logger } from "@vendetta"
 
@@ -55,7 +55,15 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                     const target_lang = settings.target_lang
                     const isTranslated = translateType === "Translate"
 
-                    const translate = await DeepL.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                    var translate
+                    switch(settings.translator) {
+                        case 0:
+                            console.log("Translating with DeepL: ", originalMessage.content)
+                            translate = await DeepL.translate(originalMessage.content, null, target_lang, !isTranslated)
+                        case 1:
+                            console.log("Translating with GTranslate: ", originalMessage.content)
+                            translate = await GTranslate.translate(originalMessage.content, null, target_lang, !isTranslated)
+                    }
 
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",

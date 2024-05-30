@@ -5,3 +5,9 @@ export interface DeepLResponse {
     data?: string
     id?: number
 }
+export interface GTranslateResponse {
+    src?: string;
+    sentences?: {
+        trans?: string;
+    }[];
+}
