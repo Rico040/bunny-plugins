@@ -12,7 +12,7 @@ const translate = async (text: string, source_lang: string = "auto", target_lang
             dt: "t",
             dj: "1",
             source: "input",
-            q: text
+            q: encodeURIComponent(text)
         });
 
         const data: GTranslateResponse = await (await fetch(API_URL)).json()
