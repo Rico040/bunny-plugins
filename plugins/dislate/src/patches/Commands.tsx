@@ -8,16 +8,20 @@ import { showConfirmationAlert } from "@vendetta/ui/alerts"
 import { findByProps } from "@vendetta/metro"
 import { settings } from ".."
 
-import Lang from "../lang"
+import { DeepLLangs} from "../lang"
 import { DeepL, GTranslate } from "../api"
 
 const ClydeUtils = findByProps("sendBotMessage")
-const langOptions = Object.entries(Lang).map(([key, value]) => ({
+const langOptionsDeepL = Object.entries(DeepLLangs).map(([key, value]) => ({
     name: key,
     displayName: key,
     value: value
 }))
-
+const langOptionsGTranslate = Object.entries(GTranslate).map(([key, value]) => ({
+    name: key,
+    displayName: key,
+    value: value
+}))
 export default () => registerCommand({
     name: "translate",
     displayName: "translate",
@@ -42,7 +46,7 @@ export default () => registerCommand({
             displayDescription: "The language that Dislate will translate the text into. This can be any language from the list.",
             type: ApplicationCommandOptionType.STRING as number,
             // @ts-ignore
-            choices: [...langOptions],
+            choices: [...langOptionsDeepL],
             required: true
         }
     ],
