@@ -51,7 +51,7 @@ export default () => {
                 })}
             />
 
-            <Text style={styles.subheaderText} onPress={() => url.openURL("https://github.com/aeongdesu/vdplugins")}>
+            <Text style={styles.subheaderText} onPress={() => url.openURL("https://github.com/Rico040/bunny-plugins")}>
                 {`Build: (${manifest.hash.substring(0, 7)})`}
             </Text>
         </ScrollView>
