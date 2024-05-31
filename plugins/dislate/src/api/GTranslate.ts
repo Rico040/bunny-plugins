@@ -19,7 +19,9 @@ const translate = async (text: string, source_lang: string = "auto", target_lang
 
         console.log(data)
 
-        return { source_lang, text: data.sentences[0].trans }
+        return { 
+            source_lang, 
+            text: data.sentences.map(s => s.trans).join('') }
     } catch (e) {
         throw Error(`Failed to fetch from Google Translate: ${e}`)
     }
