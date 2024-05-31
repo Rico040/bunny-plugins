@@ -76,7 +76,8 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                                 originalMessage.channel_id
                             ).guild_id,
                         },
-                        log_edit: false
+                        log_edit: false,
+                        otherPluginBypass: true // antied
                     })
 
                     isTranslated
