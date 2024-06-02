@@ -22,7 +22,7 @@ export default () => {
                 }}
             />
             {
-                Object.entries(DeepLLangs).filter(([key, value]) => key.includes(query)).map(([key, value]) => <FormRow
+                Object.entries(DeepLLangs).filter(([key, value]) => key.toLowerCase().includes(query.toLowerCase())).map(([key, value]) => <FormRow
                     label={key}
                     trailing={() => <FormRow.Arrow />}
                     onPress={() => {
@@ -43,7 +43,7 @@ export default () => {
                 }}
             />
             {
-                Object.entries(GTranslateLangs).filter(([key, value]) => key.includes(query)).map(([key, value]) => <FormRow
+                Object.entries(GTranslateLangs).filter(([key, value]) => key.toLowerCase().includes(query.toLowerCase())).map(([key, value]) => <FormRow
                     label={key}
                     trailing={() => <FormRow.Arrow />}
                     onPress={() => {

@@ -17,11 +17,15 @@ const langOptionsDeepL = Object.entries(DeepLLangs).map(([key, value]) => ({
     displayName: key,
     value: value
 }))
-const langOptionsGTranslate = Object.entries(GTranslate).map(([key, value]) => ({
-    name: key,
-    displayName: key,
-    value: value
-}))
+
+// TODO: Make command option somehow vary with different translators
+// const langOptionsGTranslate = Object.entries(GTranslate).map(([key, value]) => ({
+//     name: key,
+//     displayName: key,
+//     value: value
+// }))
+// const langOptions = settings?.translator === 1 ? langOptionsGTranslate : langOptionsDeepL;
+
 export default () => registerCommand({
     name: "translate",
     displayName: "translate",
@@ -56,9 +60,9 @@ export default () => registerCommand({
             var content
             switch(settings.translator) {
                 case 0:
-                    content = await DeepL.translate(text.value, null, lang.value)
+                    content = await DeepL.translate(text.value, undefined, lang.value)
                 case 1:
-                    content = await GTranslate.translate(text.value, null, lang.value)
+                    content = await GTranslate.translate(text.value, undefined, lang.value)
             }
             return await new Promise((resolve): void => showConfirmationAlert({
                 title: "Are you sure you want to send it?",
@@ -73,7 +77,7 @@ export default () => registerCommand({
             }))
         } catch (e) {
             logger.error(e)
-            return ClydeUtils.sendBotMessage(ctx.channel.id, "Failed to translate message. Please check Debug Logs for more info.", getAssetIDByName("Small"))
+            return ClydeUtils.sendBotMessage(ctx.channel.id, "Failed to translate message. Please check Debug Logs for more info.")
         }
     }
 })

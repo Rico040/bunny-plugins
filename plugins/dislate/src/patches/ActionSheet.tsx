@@ -59,10 +59,10 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                     switch(settings.translator) {
                         case 0:
                             console.log("Translating with DeepL: ", originalMessage.content)
-                            translate = await DeepL.translate(originalMessage.content, null, target_lang, !isTranslated)
+                            translate = await DeepL.translate(originalMessage.content, undefined, target_lang, !isTranslated)
                         case 1:
                             console.log("Translating with GTranslate: ", originalMessage.content)
-                            translate = await GTranslate.translate(originalMessage.content, null, target_lang, !isTranslated)
+                            translate = await GTranslate.translate(originalMessage.content, undefined, target_lang, !isTranslated)
                     }
 
                     FluxDispatcher.dispatch({

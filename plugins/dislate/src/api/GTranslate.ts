@@ -17,8 +17,6 @@ const translate = async (text: string, source_lang: string = "auto", target_lang
 
         const data: GTranslateResponse = await (await fetch(API_URL)).json()
 
-        console.log(data)
-
         return { 
             source_lang, 
             text: data.sentences.map(s => s.trans).join('') }
