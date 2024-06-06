@@ -1,0 +1,18 @@
+{
+    "name": "ActionSheetFinder",
+    "description": "Port of Enmity plugin.",
+    "authors": [
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        },
+        {
+            "name": "byeoon",
+            "id": "1167275288036655133"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "ic_search"
+    }
+}
