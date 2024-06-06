@@ -1,6 +1,6 @@
 {
     "name": "ActionSheetFinder",
-    "description": "Port of Enmity plugin.",
+    "description": "Utility plugin to find ActionSheet key of pressed sheet. Port of Enmity plugin.",
     "authors": [
         {
             "name": "Rico040",
