@@ -1,1 +1,1 @@
-(function(t,n,o){"use strict";const a=o.before("render",n.ReactNative.Text,function(c){let[e]=c;e.style={textTransform:"lowercase"},n.ReactNative.StyleSheet.flatten(e.style),console.log(e.style)});function l(){a()}return t.onUnload=l,t})({},vendetta.metro.common,vendetta.patcher);
+(function(e,n,o){"use strict";const a=o.before("render",n.ReactNative.Text,function(l){let[t]=l;const r={...n.ReactNative.StyleSheet.flatten(t.style)??{},textTransform:"lowercase"};t.style=r,console.log(t.style)});function c(){a()}return e.onUnload=c,e})({},vendetta.metro.common,vendetta.patcher);
