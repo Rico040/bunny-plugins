@@ -3,10 +3,12 @@ import { before } from "@vendetta/patcher";
 
 
 const unpatchText = before("render", RN.Text, ([x]) => {
-    x.style = {
+    const existingStyle = RN.StyleSheet.flatten(x.style) ?? {};
+    const newStyle = {
+        ...existingStyle,
         textTransform: 'lowercase'
     };
-    const style = RN.StyleSheet.flatten(x.style) ?? {};
+    x.style = newStyle;
     console.log(x.style)
 })
 
