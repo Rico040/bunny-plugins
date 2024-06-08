@@ -9,10 +9,9 @@ const unpatchText = before("render", RN.Text, ([x]) => {
         textTransform: 'lowercase'
     };
     x.style = newStyle;
-    console.log(x.style)
 })
 
 
 export function onUnload() {
-    unpatchText()
+    unpatchText();
 }
