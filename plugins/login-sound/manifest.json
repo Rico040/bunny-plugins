@@ -1,0 +1,14 @@
+{
+    "name": "LoginSound",
+    "description": "ディスコード!",
+    "authors": [
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "ic_voice_channel_24px"
+    }
+}
