@@ -1,15 +1,21 @@
 import { ReactNative } from "@vendetta/metro/common"
+import { storage } from "@vendetta/plugin";
+import Settings from "./Settings";
 
 const { DCDSoundManager } = ReactNative.NativeModules;
 
-const soundUrl = "https://raw.githubusercontent.com/Rico040/meine-themen/master/sounds/discordo-discord.mp3";
+export const settings: {
+    customUrl?: string
+} = storage
+
+const soundUrl = settings.customUrl ? settings.customUrl : "https://raw.githubusercontent.com/Rico040/meine-themen/master/sounds/discordo-discord.mp3";
 const soundId = 6970;
 let soundDuration = -1;
 
 // Function to prepare the sound
 const prepareSound = function () {
     return new Promise(function (resolve) {
-        DCDSoundManager.prepare(soundUrl, "notification", soundId, function (error, sound) {
+        DCDSoundManager.prepare(soundUrl, "music", soundId, function (error, sound) {
             resolve(sound);
         });
     });
@@ -41,9 +47,11 @@ export default {
         if (!isPrepared) {
             prepareSound().then(function (sound) {
                 isPrepared = true;
+                //@ts-ignore
                 soundDuration = sound.duration;
                 playSound()
-            });
+            })
         }
-    }
+    },
+    settings: Settings
 }
