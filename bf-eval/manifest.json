@@ -1,1 +1,1 @@
-{"name":"BrainFuckEval","description":"Adds /bfeval command.","authors":[{"name":"Rico040","id":"619474349845643275"}],"main":"index.js","vendetta":{"icon":"ChatAlertIcon"},"hash":"82b391f683e7f56542698b87cd4954e7ad8488a28f14c7b0299719d26fb9a836"}
+{"name":"BrainFuckEval","description":"Adds /bfeval command.","authors":[{"name":"Rico040","id":"619474349845643275"}],"main":"index.js","vendetta":{"icon":"ChatAlertIcon"},"hash":"5a99a73de86b5eddd915e242ef1906cccf55849e01a91c6be26cb65b6a6896c1"}
