@@ -1,0 +1,14 @@
+{
+    "name": "NoStyle",
+    "description": "DISCLAIMER: This plugin breaks Discord, DO NOT ENABLE it if you don't know how to disable it manually!",
+    "authors": [
+        {
+            "name": "Rico040",
+            "id": "619474349845643275"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "img_none"
+    }
+}
