@@ -29,7 +29,7 @@ function extractUnusableEmojis(messageString: string, size: number) {
 			if (storage.hyperlink === true) {
 				emojiUrls.push(`[${emojiString[1]}](https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}&quality=lossless&name=${emojiString[1]})`);
 			} else {
-				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}`);
+				emojiUrls.push(`https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}&quality=lossless&name=${emojiString[1]}`);
 			}
 		}
 	}

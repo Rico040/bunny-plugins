@@ -10,6 +10,7 @@ const sizeOptions = {
     Tiny: 16,
     Small: 32,
     Medium: 48,
+    Big: 56,
     Large: 64,
     Huge: 96,
     Jumbo: 128,
