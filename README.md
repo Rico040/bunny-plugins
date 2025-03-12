@@ -28,7 +28,7 @@ Allows you to use Nitro emoji without Nitro.
 ## HideAppButton
 Hides app button from chatbox.
 
-⚠ Doesn't work in latest versions, use [Better Chat Buttons](https://raw.githubusercontent.com/PalmDevs/revenge-plugins-builds/main/better-chat-buttons) instead.
+⚠ Doesn't work in latest versions, use [Better Chat Buttons](https://github.com/PalmDevs/revenge-plugins) instead.
 
 > https://rico040.github.io/bunny-plugins/hideappbutton/
 
