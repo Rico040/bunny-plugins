@@ -33,7 +33,8 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
         const unpatch = after("default", instance, (_, component) => {
             React.useEffect(() => () => { unpatch() }, [])
 
-            const buttons = findInReactTree(component, x => x?.[0]?.type?.name === "ButtonRow")
+            // this thing is not backward compatible
+            const buttons = findInReactTree(component, x => x?.[0]?.type?.name === "ActionSheetRow")
             if (!buttons) return
             const position = Math.max(buttons.findIndex((x: any) => x.props.message === i18n.Messages.MARK_UNREAD), 0)
 
@@ -48,7 +49,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
             const existingCachedObject = cachedData.find((o: any) => Object.keys(o)[0] === messageId, "cache object")
 
             const translateType = existingCachedObject ? "Revert" : "Translate"
-            const icon = translateType === "Translate" ? getAssetIDByName("ic_locale_24px") : getAssetIDByName("ic_highlight")
+            const icon = translateType === "Translate" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
 
             const translate = async () => {
                 try {
