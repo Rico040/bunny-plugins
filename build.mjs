@@ -35,11 +35,23 @@ const plugins = [
                     },
                 },
                 env: {
-                    targets: "defaults",
+                    targets: "fully supports es6",
                     include: [
+                        "transform-block-scoping",
                         "transform-classes",
-                        "transform-arrow-functions",
+                        "transform-async-to-generator",
+                        "transform-async-generator-functions"
                     ],
+                    exclude: [
+                        "transform-parameters",
+                        "transform-template-literals",
+                        "transform-exponentiation-operator",
+                        "transform-named-capturing-groups-regex",
+                        "transform-nullish-coalescing-operator",
+                        "transform-object-rest-spread",
+                        "transform-optional-chaining",
+                        "transform-logical-assignment-operators"
+                    ]
                 },
             });
             return result.code;
