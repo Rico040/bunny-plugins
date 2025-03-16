@@ -9,8 +9,8 @@ export const settings: {
     translator?: number
 } = storage
 
-settings.target_lang ??= "EN"
-settings.translator ??= 0
+settings.target_lang ??= "en"
+settings.translator ??= 1
 
 let patches = []
 
