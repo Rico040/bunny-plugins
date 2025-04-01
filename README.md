@@ -1,3 +1,6 @@
+# ⚠️ Archival notice
+I don't have any motivation to maintain this repo forward, sorry
+
 # Rico040's Bunny Plugins
 These are Vendetta plugins patched to work with [Bunny](https://github.com/bunny-mod) on new discord versions. Credits goes to original devs of their respective plugin. 
 
