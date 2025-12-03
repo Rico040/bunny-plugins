@@ -21,19 +21,18 @@ function extractUnusableEmojis(messageString: string, size: number) {
 		) {
 			// Add to emotes to send
 			// Hacky fix, someone on discord removed url property for emoji
-			var ext = "webp"
-			if (emoji.animated){ ext = "gif"; }
-			if (storage.hyperlink === true) {
-				messageString = messageString.replace(
-					emojiString[0], 
-					`[${emojiString[1]}](https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}&quality=lossless&name=${emojiString[1]})`
-				);
-			} else {
-				messageString = messageString.replace(
-					emojiString[0], 
-					`https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}&quality=lossless&name=${emojiString[1]}`
-				);
+			// I dunno if webp works everywhere
+			const ext = "webp";
+			let baseUrl = `https://cdn.discordapp.com/emojis/${emojiString[2]}.${ext}?size=${size}&quality=lossless&name=${emojiString[1]}`;
+			if (emoji.animated) {
+    			baseUrl += "&animated=true";
 			}
+
+			const replacement = storage.hyperlink
+  				? `[${emojiString[1]}](${baseUrl})`
+  				: baseUrl;
+
+			messageString = messageString.replace(emojiString[0], replacement);
 		}
 	}
 	
