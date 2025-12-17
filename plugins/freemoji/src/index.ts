@@ -8,6 +8,7 @@ storage.emojiSize ??= 48;
 storage.hyperlink ??= true;
 storage.haveNitro ??= findByStoreName("UserStore").getCurrentUser()?.premiumType !== null;
 storage.forceMoji ??= false;
+storage.customHyperLinkString ??= "";
 
 // Migration code, used to be string containing a number but is now just a number
 if (typeof storage.emojiSize === "string") storage.emojiSize = parseInt(storage.emojiSize);

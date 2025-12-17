@@ -25,6 +25,14 @@ export default () => {
         <RN.ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
             <FormSection title="Settings" titleStyleType="no_border">
                 <FormSwitchRow
+                    label="Force Freemoji"
+                    subLabel="Explicitly force Freemoji even if you have nitro (useful for testing)"
+                    leading={<Forms.FormIcon source={getAssetIDByName("img_nitro_emojis")} />}
+                    value={storage.forceMoji}
+                    onValueChange={ () => {storage.forceMoji = !storage.forceMoji;}}
+                    note=""
+                />
+                <FormSwitchRow
                     label="Hyperlink emoji"
                     subLabel="Hyperlinks emoji link to be less distractive"
                     leading={<Forms.FormIcon source={getAssetIDByName("ic_link")} />}
@@ -32,13 +40,16 @@ export default () => {
                     onValueChange={ () => {storage.hyperlink = !storage.hyperlink;}}
                     note=""
                 />
-                <FormSwitchRow
-                    label="Force Freemoji"
-                    subLabel="Explicitly force Freemoji even if you have nitro (useful for testing)"
-                    leading={<Forms.FormIcon source={getAssetIDByName("img_nitro_emojis")} />}
-                    value={storage.forceMoji}
-                    onValueChange={ () => {storage.forceMoji = !storage.forceMoji;}}
-                    note=""
+                <Forms.FormRow
+                    label="Custom Hyperlink text"
+                    leading={<Forms.FormIcon source={getAssetIDByName("ic_link")} />}
+                />
+                <Forms.FormInput
+                    title=""
+                    placeholder="Put text here. Leave empty to use emoji's name."
+                    value={storage.customHyperLinkString}
+                    onChange={( x: string ) => storage.customHyperLinkString = x}
+                    style={{ marginTop: -25, marginHorizontal: 12 }}
                 />
             </FormSection>
             <FormSection title="Emoji Size" >

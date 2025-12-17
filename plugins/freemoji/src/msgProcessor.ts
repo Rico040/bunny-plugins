@@ -27,9 +27,10 @@ function extractUnusableEmojis(messageString: string, size: number) {
 			if (emoji.animated) {
     			baseUrl += "&animated=true";
 			}
-
+			
+			const linkText = storage.customHyperLinkString || emojiString[1];
 			const replacement = storage.hyperlink
-  				? `[${emojiString[1]}](${baseUrl})`
+  				? `[${linkText}](${baseUrl})`
   				: baseUrl;
 
 			messageString = messageString.replace(emojiString[0], replacement);
