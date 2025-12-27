@@ -15,7 +15,7 @@ const LazyActionSheet = findByProps("openLazy", "hideActionSheet")
 const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow // no icon if legacy
 const MessageStore = findByStoreName("MessageStore")
 const ChannelStore = findByStoreName("ChannelStore")
-const separator = "\n─────────────\n";
+const separator = "\n";
 
 const styles = stylesheet.createThemedStyleSheet({
     iconComponent: {
@@ -53,6 +53,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
             const icon = translateType === "翻译" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
 
             const translate = async () => {
+                LazyActionSheet.hideActionSheet()
                 try {
                     const target_lang = settings.target_lang
                     const isTranslated = translateType === "翻译"
@@ -88,8 +89,6 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                 } catch (e) {
                     showToast("Failed to translate message. Please check Debug Logs for more info.", getAssetIDByName("Small"))
                     logger.error(e)
-                } finally {
-                    return LazyActionSheet.hideActionSheet()
                 }
             }
 
