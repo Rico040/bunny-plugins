@@ -1,6 +1,6 @@
 {
-    "name": "Dislate Lite",
-    "description": "Translates text into a desired language.",
+    "name": "翻译插件",
+    "description": "把消息翻译成设定的语言",
     "authors": [
         {
             "name": "Acquite <3",
@@ -12,6 +12,10 @@
         },
         {
         	"name": "Rico040 ;)",
+        	"id": "619474349845643275"
+        },
+        {
+        	"name": "chrysoljq",
         	"id": "619474349845643275"
         }
     ],
