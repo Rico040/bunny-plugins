@@ -57,7 +57,8 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                 try {
                     const target_lang = settings.target_lang
                     const isTranslated = translateType === "翻译"
-
+                    
+                    if (!originalMessage) return;
                     var translate
                     switch(settings.translator) {
                         case 0:
@@ -69,15 +70,17 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                             translate = await GTranslate.translate(originalMessage.content, undefined, target_lang, !isTranslated)
                             break
                     }
-
+                    
+                    const immersiveContent = isTranslated 
+                                ? `${messageContent}${separator}${translate.text} \`[${target_lang?.toLowerCase()}]\``
+                                : (existingCachedObject as object)[messageId];
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
                         message: {
-                            ...originalMessage,
-                            content: isTranslated 
-                                ? `${messageContent}${separator}${translate.text} \`[${target_lang?.toLowerCase()}]\``
-                                : (existingCachedObject as object)[messageId],
-                                guild_id: ChannelStore.getChannel(originalMessage.channel_id).guild_id,
+                            id: messageId,
+                            channel_id: originalMessage.channel_id,
+                            guild_id: ChannelStore.getChannel(originalMessage.channel_id)?.guild_id,
+                            content: immersiveContent,
                         },
                         log_edit: false,
                         otherPluginBypass: true // antied
