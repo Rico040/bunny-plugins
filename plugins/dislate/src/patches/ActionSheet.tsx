@@ -15,7 +15,7 @@ const LazyActionSheet = findByProps("openLazy", "hideActionSheet")
 const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow // no icon if legacy
 const MessageStore = findByStoreName("MessageStore")
 const ChannelStore = findByStoreName("ChannelStore")
-const separator = "\n────────────\n";
+const separator = "\n─────────────\n";
 
 const styles = stylesheet.createThemedStyleSheet({
     iconComponent: {
