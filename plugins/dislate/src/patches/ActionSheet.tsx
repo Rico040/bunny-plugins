@@ -15,6 +15,7 @@ const LazyActionSheet = findByProps("openLazy", "hideActionSheet")
 const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow // no icon if legacy
 const MessageStore = findByStoreName("MessageStore")
 const ChannelStore = findByStoreName("ChannelStore")
+const separator = "\n────────────\n";
 
 const styles = stylesheet.createThemedStyleSheet({
     iconComponent: {
@@ -48,34 +49,34 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
             const messageContent = originalMessage?.content ?? message.content
             const existingCachedObject = cachedData.find((o: any) => Object.keys(o)[0] === messageId, "cache object")
 
-            const translateType = existingCachedObject ? "Revert" : "Translate"
-            const icon = translateType === "Translate" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
+            const translateType = existingCachedObject ? "还原" : "翻译"
+            const icon = translateType === "翻译" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
 
             const translate = async () => {
                 try {
                     const target_lang = settings.target_lang
-                    const isTranslated = translateType === "Translate"
+                    const isTranslated = translateType === "翻译"
 
                     var translate
                     switch(settings.translator) {
                         case 0:
                             console.log("Translating with DeepL: ", originalMessage.content)
                             translate = await DeepL.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                            break
                         case 1:
                             console.log("Translating with GTranslate: ", originalMessage.content)
                             translate = await GTranslate.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                            break
                     }
 
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
                         message: {
                             ...originalMessage,
-                            content: `${isTranslated ? translate.text : (existingCachedObject as object)[messageId]}`
-                                + ` ${isTranslated ? `\`[${target_lang?.toLowerCase()}]\``
-                                    : ""}`,
-                            guild_id: ChannelStore.getChannel(
-                                originalMessage.channel_id
-                            ).guild_id,
+                            content: isTranslated 
+                                ? `${messageContent}${separator}${translate.text} \`[${target_lang?.toLowerCase()}]\``
+                                : (existingCachedObject as object)[messageId],
+                                guild_id: ChannelStore.getChannel(originalMessage.channel_id).guild_id,
                         },
                         log_edit: false,
                         otherPluginBypass: true // antied
@@ -95,7 +96,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
 
             buttons.splice(position, 0, (
                 <ActionSheetRow
-                    label={`${translateType} Message`}
+                    label={`${translateType}`}
                     icon={
                         <ActionSheetRow.Icon
                             source={icon}
