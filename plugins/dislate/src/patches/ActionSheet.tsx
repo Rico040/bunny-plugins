@@ -60,22 +60,35 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                     const isImmersive = settings.immersive_enabled
                     
                     if (!originalMessage) return;
+
+                    const emojiRegex = /<(a?):\w+:\d+>|<@!?\d+>|<#\d+>/g;
+                    const placeholders: string[] = [];
+                    const textToTranslate = messageContent.replace(emojiRegex, (match) => {
+                        placeholders.push(match);
+                        return ` [[${placeholders.length - 1}]] `;
+                    });
                     var translate
                     switch(settings.translator) {
                         case 0:
-                            console.log("Translating with DeepL: ", originalMessage.content)
-                            translate = await DeepL.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                            console.log("Translating with DeepL: ", textToTranslate)
+                            translate = await DeepL.translate(textToTranslate, undefined, target_lang, !isTranslated)
                             break
                         case 1:
-                            console.log("Translating with GTranslate: ", originalMessage.content)
-                            translate = await GTranslate.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                            console.log("Translating with GTranslate: ", textToTranslate)
+                            translate = await GTranslate.translate(textToTranslate, undefined, target_lang, !isTranslated)
                             break
                     }
                     
+                    let translatedText = translate.text;
+                    placeholders.forEach((original, index) => {
+                        const pRegex = new RegExp(`\\[\\[\\s*${index}\\s*\\]\\]`, 'g');
+                        translatedText = translatedText.replace(pRegex, original);
+                    });
+
                     const finalContent = isTranslated
                                 ? (isImmersive
-                                    ? `${messageContent}${separator}${translate.text} \`[${target_lang?.toLowerCase()}]\``
-                                    : `${translate.text} \`[${target_lang?.toLowerCase()}]\``)
+                                    ? `${messageContent}${separator}${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
+                                    : `${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``)
                                 : (existingCachedObject as object)[messageId];
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
