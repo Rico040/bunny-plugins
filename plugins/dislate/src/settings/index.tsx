@@ -31,10 +31,10 @@ export default () => {
     return (
         <ScrollView>
             <FormSwitchRow
-                label={"沉浸式翻译"}
-                subLabel={"开启后将同时显示原文和译文"}
+                label={"Immersive Translation"}
+                subLabel={"Display both original and translation"}
                 leading={<FormRow.Icon source={getAssetIDByName("ic_chat_bubble_filled_24px")} />}
-                value={settings.immersive_enabled ?? true} // 默认开启
+                value={settings.immersive_enabled ?? true} // Default enabled
                 onValueChange={(v) => {
                     settings.immersive_enabled = v
                 }}
