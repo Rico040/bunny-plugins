@@ -49,14 +49,14 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
             const messageContent = originalMessage?.content ?? message.content
             const existingCachedObject = cachedData.find((o: any) => Object.keys(o)[0] === messageId, "cache object")
 
-            const translateType = existingCachedObject ? "还原" : "翻译"
-            const icon = translateType === "翻译" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
+            const translateType = existingCachedObject ? "Revert" : "Translate"
+            const icon = translateType === "Translate" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
 
             const translate = async () => {
                 LazyActionSheet.hideActionSheet()
                 try {
                     const target_lang = settings.target_lang
-                    const isTranslated = translateType === "翻译"
+                    const isTranslated = translateType === "Translate"
                     const isImmersive = settings.immersive_enabled
                     
                     if (!originalMessage) return;
@@ -114,7 +114,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
 
             buttons.splice(position, 0, (
                 <ActionSheetRow
-                    label={`${translateType}`}
+                    label={`${translateType} Message`}
                     icon={
                         <ActionSheetRow.Icon
                             source={icon}
