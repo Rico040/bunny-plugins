@@ -10,7 +10,7 @@ import TargetLang from "./TargetLang"
 import TranslatorPage from "./TranslatorPage"
 
 const { ScrollView, Text } = ReactNative
-const { FormRow } = Forms
+const { FormRow, FormSwitch } = Forms
 
 const styles = stylesheet.createThemedStyleSheet({
     subheaderText: {
@@ -30,6 +30,16 @@ export default () => {
 
     return (
         <ScrollView>
+            <FormSwitch
+                label={"沉浸式翻译"}
+                subLabel={"开启后将同时显示原文和译文"}
+                leading={<FormRow.Icon source={getAssetIDByName("ic_chat_bubble_filled_24px")} />}
+                value={settings.immersive_enabled ?? true} // 默认开启
+                onValueChange={(v) => {
+                    settings.immersive_enabled = v;
+                }}
+            />
+
             <FormRow
                 label={"Translate to"}
                 subLabel={settings.target_lang?.toLowerCase()}

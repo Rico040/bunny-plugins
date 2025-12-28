@@ -57,6 +57,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                 try {
                     const target_lang = settings.target_lang
                     const isTranslated = translateType === "翻译"
+                    const isImmersive = settings.immersive_enabled
                     
                     if (!originalMessage) return;
                     var translate
@@ -71,8 +72,10 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                             break
                     }
                     
-                    const immersiveContent = isTranslated 
-                                ? `${messageContent}${separator}${translate.text} \`[${target_lang?.toLowerCase()}]\``
+                    const finalContent = isTranslated
+                                ? (isImmersive
+                                    ? `${messageContent}${separator}${translate.text} \`[${target_lang?.toLowerCase()}]\``
+                                    : `${translate.text} \`[${target_lang?.toLowerCase()}]\``)
                                 : (existingCachedObject as object)[messageId];
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
@@ -80,7 +83,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                             id: messageId,
                             channel_id: originalMessage.channel_id,
                             guild_id: ChannelStore.getChannel(originalMessage.channel_id)?.guild_id,
-                            content: immersiveContent,
+                            content: finalContent,
                         },
                         log_edit: false,
                         otherPluginBypass: true // antied
