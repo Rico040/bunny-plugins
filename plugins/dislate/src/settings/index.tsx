@@ -36,7 +36,7 @@ export default () => {
                 leading={<FormRow.Icon source={getAssetIDByName("ic_chat_bubble_filled_24px")} />}
                 value={settings.immersive_enabled ?? true} // 默认开启
                 onValueChange={(v) => {
-                    settings.immersive_enabled = v;
+                    settings.immersive_enabled = v
                 }}
             />
 

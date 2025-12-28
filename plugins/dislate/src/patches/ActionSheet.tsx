@@ -15,7 +15,7 @@ const LazyActionSheet = findByProps("openLazy", "hideActionSheet")
 const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow // no icon if legacy
 const MessageStore = findByStoreName("MessageStore")
 const ChannelStore = findByStoreName("ChannelStore")
-const separator = "\n";
+const separator = "\n"
 
 const styles = stylesheet.createThemedStyleSheet({
     iconComponent: {
@@ -59,14 +59,14 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                     const isTranslated = translateType === "Translate"
                     const isImmersive = settings.immersive_enabled
                     
-                    if (!originalMessage) return;
+                    if (!originalMessage) return
 
-                    const emojiRegex = /<(a?):\w+:\d+>|<@!?\d+>|<#\d+>/g;
-                    const placeholders: string[] = [];
+                    const emojiRegex = /<(a?):\w+:\d+>|<@!?\d+>|<#\d+>/g
+                    const placeholders: string[] = []
                     const textToTranslate = messageContent.replace(emojiRegex, (match) => {
-                        placeholders.push(match);
-                        return ` [[${placeholders.length - 1}]] `;
-                    });
+                        placeholders.push(match)
+                        return ` [[${placeholders.length - 1}]] `
+                    })
                     var translate
                     switch(settings.translator) {
                         case 0:
@@ -79,17 +79,17 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                             break
                     }
                     
-                    let translatedText = translate.text;
+                    let translatedText = translate.text
                     placeholders.forEach((original, index) => {
-                        const pRegex = new RegExp(`\\[\\[\\s*${index}\\s*\\]\\]`, 'g');
-                        translatedText = translatedText.replace(pRegex, original);
-                    });
+                        const pRegex = new RegExp(`\\[\\[\\s*${index}\\s*\\]\\]`, 'g')
+                        translatedText = translatedText.replace(pRegex, original)
+                    })
 
                     const finalContent = isTranslated
                                 ? (isImmersive
                                     ? `${messageContent}${separator}${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
                                     : `${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``)
-                                : (existingCachedObject as object)[messageId];
+                                : (existingCachedObject as object)[messageId]
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
                         message: {

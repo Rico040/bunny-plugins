@@ -12,7 +12,7 @@ export const settings: {
 
 settings.target_lang ??= "en"
 settings.translator ??= 1
-settings.immersive_enabled ??=true
+settings.immersive_enabled ??= true
 
 let patches = []
 
