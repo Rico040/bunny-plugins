@@ -61,8 +61,10 @@ export default () => registerCommand({
             switch(settings.translator) {
                 case 0:
                     content = await DeepL.translate(text.value, undefined, lang.value)
+                    break
                 case 1:
                     content = await GTranslate.translate(text.value, undefined, lang.value)
+                    break
             }
             return await new Promise((resolve): void => showConfirmationAlert({
                 title: "Are you sure you want to send it?",

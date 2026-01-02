@@ -15,6 +15,7 @@ const LazyActionSheet = findByProps("openLazy", "hideActionSheet")
 const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow // no icon if legacy
 const MessageStore = findByStoreName("MessageStore")
 const ChannelStore = findByStoreName("ChannelStore")
+const separator = "\n"
 
 const styles = stylesheet.createThemedStyleSheet({
     iconComponent: {
@@ -52,30 +53,50 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
             const icon = translateType === "Translate" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
 
             const translate = async () => {
+                LazyActionSheet.hideActionSheet()
                 try {
                     const target_lang = settings.target_lang
                     const isTranslated = translateType === "Translate"
+                    const isImmersive = settings.immersive_enabled
+                    
+                    if (!originalMessage) return
 
+                    const emojiRegex = /<(a?):\w+:\d+>|<@!?\d+>|<#\d+>/g
+                    const placeholders: string[] = []
+                    const textToTranslate = messageContent.replace(emojiRegex, (match) => {
+                        placeholders.push(match)
+                        return ` [[${placeholders.length - 1}]] `
+                    })
                     var translate
                     switch(settings.translator) {
                         case 0:
-                            console.log("Translating with DeepL: ", originalMessage.content)
-                            translate = await DeepL.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                            console.log("Translating with DeepL: ", textToTranslate)
+                            translate = await DeepL.translate(textToTranslate, undefined, target_lang, !isTranslated)
+                            break
                         case 1:
-                            console.log("Translating with GTranslate: ", originalMessage.content)
-                            translate = await GTranslate.translate(originalMessage.content, undefined, target_lang, !isTranslated)
+                            console.log("Translating with GTranslate: ", textToTranslate)
+                            translate = await GTranslate.translate(textToTranslate, undefined, target_lang, !isTranslated)
+                            break
                     }
+                    
+                    let translatedText = translate.text
+                    placeholders.forEach((original, index) => {
+                        const pRegex = new RegExp(`\\[\\[\\s*${index}\\s*\\]\\]`, 'g')
+                        translatedText = translatedText.replace(pRegex, original)
+                    })
 
+                    const finalContent = isTranslated
+                                ? (isImmersive
+                                    ? `${messageContent}${separator}${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
+                                    : `${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``)
+                                : (existingCachedObject as object)[messageId]
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
                         message: {
-                            ...originalMessage,
-                            content: `${isTranslated ? translate.text : (existingCachedObject as object)[messageId]}`
-                                + ` ${isTranslated ? `\`[${target_lang?.toLowerCase()}]\``
-                                    : ""}`,
-                            guild_id: ChannelStore.getChannel(
-                                originalMessage.channel_id
-                            ).guild_id,
+                            id: messageId,
+                            channel_id: originalMessage.channel_id,
+                            guild_id: ChannelStore.getChannel(originalMessage.channel_id)?.guild_id,
+                            content: finalContent,
                         },
                         log_edit: false,
                         otherPluginBypass: true // antied
@@ -87,8 +108,6 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                 } catch (e) {
                     showToast("Failed to translate message. Please check Debug Logs for more info.", getAssetIDByName("Small"))
                     logger.error(e)
-                } finally {
-                    return LazyActionSheet.hideActionSheet()
                 }
             }
 
