@@ -1,28 +1,67 @@
-import { storage } from "@vendetta/plugin"
-import patchActionSheet from "./patches/ActionSheet"  
-import patchCommands from "./patches/Commands"
-import Settings from "./settings"
+import { findByProps } from "@vendetta/metro";
+import { after } from "@vendetta/patcher";
+import { getAssetIDByName } from "@vendetta/ui/assets";
+import { showToast } from "@vendetta/ui/toasts";
+import { settings } from "../index"; // استيراد الإعدادات التي أضفناها
 
-export const settings: {
-    source_lang?: string
-    target_lang?: string
-    translator?: number
-    immersive_enabled?: boolean
-    gemini_key?: string        // ✅ زيدنا هذا
-} = storage
+const ActionSheet = findByProps("openLazy", "hideActionSheet");
 
-settings.target_lang ??= "en"
-settings.translator ??= 1
-settings.immersive_enabled ??= true
-settings.gemini_key ??= ""    // ✅ وزيدنا هذا
+// دالة الترجمة باستخدام Gemini
+async function translateWithGemini(text: string, targetLang: string, apiKey: string): Promise<string> {
+    if (!apiKey) return "⚠️ Error: Please set your Gemini API Key in settings.";
 
-let patches = []
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: `Translate the following text to ${targetLang} only, without explanations: ${text}` }]
+                }]
+            })
+        });
 
-export default {
-    onLoad: () => patches = [
-        patchActionSheet(),
-        patchCommands()
-    ],
-    onUnload: () => { for (const unpatch of patches) unpatch() },
-    settings: Settings
+        const data = await response.json();
+        // استخراج النص المترجم من رد Gemini
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "❌ Translation Failed";
+    } catch (e) {
+        console.error(e);
+        return "❌ Network Error";
+    }
+}
+
+export default function patchActionSheet() {
+    return after("openLazy", ActionSheet, ([component, args, actionMessage]) => {
+        const message = args?.message || actionMessage; // الحصول على الرسالة
+        if (!message || !message.content) return;
+
+        component.then(instance => {
+            const buttons = instance.props?.buttons;
+            if (!buttons) return;
+
+            // إضافة زر الترجمة
+            const translateButton = {
+                label: "Translate with Gemini",
+                icon: getAssetIDByName("ic_google_translate"), // أيقونة الترجمة
+                onPress: async () => {
+                    showToast("Translating...", getAssetIDByName("ic_sync"));
+                    
+                    // استدعاء دالة الترجمة
+                    const translatedText = await translateWithGemini(
+                        message.content, 
+                        settings.target_lang || "ar", // اللغة الهدف (العربية افتراضياً)
+                        settings.gemini_key // مفتاح API
+                    );
+
+                    // عرض النتيجة (يمكن تغييرها لتظهر كنافذة منبثقة لاحقاً)
+                    showToast(translatedText, getAssetIDByName("Check"));
+                    
+                    // (اختياري) إذا كنت تريد إرسال الترجمة كرسالة، سنحتاج لكود إضافي هنا
+                }
+            };
+
+            // وضع الزر في بداية القائمة
+            buttons.unshift(translateButton);
+        });
+    });
 }
