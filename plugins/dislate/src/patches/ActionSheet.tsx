@@ -2,7 +2,7 @@ import { findByProps } from "@vendetta/metro";
 import { after } from "@vendetta/patcher";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 import { showToast } from "@vendetta/ui/toasts";
-import { settings } from "../index"; // استيراد الإعدادات التي أضفناها
+import { settings } from "../index"; // استيراد الإعدادات
 
 const ActionSheet = findByProps("openLazy", "hideActionSheet");
 
@@ -22,7 +22,6 @@ async function translateWithGemini(text: string, targetLang: string, apiKey: str
         });
 
         const data = await response.json();
-        // استخراج النص المترجم من رد Gemini
         return data.candidates?.[0]?.content?.parts?.[0]?.text || "❌ Translation Failed";
     } catch (e) {
         console.error(e);
@@ -32,61 +31,31 @@ async function translateWithGemini(text: string, targetLang: string, apiKey: str
 
 export default function patchActionSheet() {
     return after("openLazy", ActionSheet, ([component, args, actionMessage]) => {
-        const message = args?.message || actionMessage; // الحصول على الرسالة
+        const message = args?.message || actionMessage;
         if (!message || !message.content) return;
 
         component.then(instance => {
             const buttons = instance.props?.buttons;
             if (!buttons) return;
 
-            // إضافة زر الترجمة
+            // زر الترجمة
             const translateButton = {
                 label: "Translate with Gemini",
-                icon: getAssetIDByName("ic_google_translate"), // أيقونة الترجمة
+                icon: getAssetIDByName("ic_google_translate"),
                 onPress: async () => {
                     showToast("Translating...", getAssetIDByName("ic_sync"));
                     
-                    // استدعاء دالة الترجمة
                     const translatedText = await translateWithGemini(
                         message.content, 
-                        settings.target_lang || "ar", // اللغة الهدف (العربية افتراضياً)
-                        settings.gemini_key // مفتاح API
+                        settings.target_lang || "ar", 
+                        settings.gemini_key
                     );
 
-                    // عرض النتيجة (يمكن تغييرها لتظهر كنافذة منبثقة لاحقاً)
                     showToast(translatedText, getAssetIDByName("Check"));
-                    
-                    // (اختياري) إذا كنت تريد إرسال الترجمة كرسالة، سنحتاج لكود إضافي هنا
                 }
             };
 
-            // وضع الزر في بداية القائمة
             buttons.unshift(translateButton);
         });
     });
 }
-            logger.error(e);
-          }
-        };
-
-        buttons.splice(position, 0, (
-          <ActionSheetRow
-            label={`${translateType} Message`}
-            icon={
-              <ActionSheetRow.Icon
-                source={icon}
-                IconComponent={() => (
-                  <ReactNative.Image
-                    resizeMode="cover"
-                    style={styles.iconComponent}
-                    source={icon}
-                  />
-                )}
-              />
-            }
-            onPress={translate}
-          />
-        ));
-      });
-    });
-  });
