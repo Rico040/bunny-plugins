@@ -1,144 +1,70 @@
-import { findByProps, findByStoreName } from "@vendetta/metro";
-import { FluxDispatcher, React, ReactNative, i18n, stylesheet } from "@vendetta/metro/common";
-import { before, after } from "@vendetta/patcher";
-import { semanticColors } from "@vendetta/ui";
+import { findByProps } from "@vendetta/metro";
+import { after } from "@vendetta/patcher";
 import { getAssetIDByName } from "@vendetta/ui/assets";
-import { Forms } from "@vendetta/ui/components";
-import { findInReactTree } from "@vendetta/utils";
-import { settings } from "..";
-
-import { DeepL, GTranslate } from "../api";
-import { Gemini } from "../api/Gemini"; // ✅ NEW
 import { showToast } from "@vendetta/ui/toasts";
-import { logger } from "@vendetta";
+import { settings } from "../index"; // استيراد الإعدادات التي أضفناها
 
-const LazyActionSheet = findByProps("openLazy", "hideActionSheet");
-const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow; // no icon if legacy
-const MessageStore = findByStoreName("MessageStore");
-const ChannelStore = findByStoreName("ChannelStore");
-const separator = "\n";
+const ActionSheet = findByProps("openLazy", "hideActionSheet");
 
-const styles = stylesheet.createThemedStyleSheet({
-  iconComponent: {
-    width: 24,
-    height: 24,
-    tintColor: semanticColors.INTERACTIVE_NORMAL
-  }
-});
+// دالة الترجمة باستخدام Gemini
+async function translateWithGemini(text: string, targetLang: string, apiKey: string): Promise<string> {
+    if (!apiKey) return "⚠️ Error: Please set your Gemini API Key in settings.";
 
-let cachedData: object[] = [];
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: `Translate the following text to ${targetLang} only, without explanations: ${text}` }]
+                }]
+            })
+        });
 
-export default () =>
-  before("openLazy", LazyActionSheet, ([component, key, msg]) => {
-    const message = msg?.message;
-    if (key !== "MessageLongPressActionSheet" || !message) return;
+        const data = await response.json();
+        // استخراج النص المترجم من رد Gemini
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "❌ Translation Failed";
+    } catch (e) {
+        console.error(e);
+        return "❌ Network Error";
+    }
+}
 
-    component.then((instance) => {
-      const unpatch = after("default", instance, (_, component) => {
-        React.useEffect(() => () => { unpatch(); }, []);
+export default function patchActionSheet() {
+    return after("openLazy", ActionSheet, ([component, args, actionMessage]) => {
+        const message = args?.message || actionMessage; // الحصول على الرسالة
+        if (!message || !message.content) return;
 
-        // this thing is not backward compatible
-        const buttons = findInReactTree(component, (x) => x?.[0]?.type?.name === "ActionSheetRow");
-        if (!buttons) return;
+        component.then(instance => {
+            const buttons = instance.props?.buttons;
+            if (!buttons) return;
 
-        const position = Math.max(
-          buttons.findIndex((x: any) => x.props.message === i18n.Messages.MARK_UNREAD),
-          0
-        );
+            // إضافة زر الترجمة
+            const translateButton = {
+                label: "Translate with Gemini",
+                icon: getAssetIDByName("ic_google_translate"), // أيقونة الترجمة
+                onPress: async () => {
+                    showToast("Translating...", getAssetIDByName("ic_sync"));
+                    
+                    // استدعاء دالة الترجمة
+                    const translatedText = await translateWithGemini(
+                        message.content, 
+                        settings.target_lang || "ar", // اللغة الهدف (العربية افتراضياً)
+                        settings.gemini_key // مفتاح API
+                    );
 
-        const originalMessage = MessageStore.getMessage(message.channel_id, message.id);
-        if (!originalMessage?.content && !message.content) return;
-
-        const messageId = originalMessage?.id ?? message.id;
-        const messageContent = originalMessage?.content ?? message.content;
-        const existingCachedObject = cachedData.find((o: any) => Object.keys(o)[0] === messageId, "cache object");
-
-        const translateType = existingCachedObject ? "Revert" : "Translate";
-        const icon = translateType === "Translate" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight");
-
-        const translate = async () => {
-          LazyActionSheet.hideActionSheet();
-          try {
-            const target_lang = settings.target_lang;
-            const isTranslated = translateType === "Translate";
-            const isImmersive = settings.immersive_enabled;
-
-            if (!originalMessage) return;
-
-            const emojiRegex = /<(a?):\w+:\d+>|<@!?\d+>|<#\d+>/g;
-            const placeholders: string[] = [];
-            const textToTranslate = messageContent.replace(emojiRegex, (match) => {
-              placeholders.push(match);
-              return ` [[${placeholders.length - 1}]] `;
-            });
-
-            let result: any;
-
-            switch (settings.translator) {
-              case 0:
-                console.log("Translating with DeepL: ", textToTranslate);
-                result = await DeepL.translate(textToTranslate, undefined, target_lang, !isTranslated);
-                break;
-
-              case 1:
-                console.log("Translating with GTranslate: ", textToTranslate);
-                result = await GTranslate.translate(textToTranslate, undefined, target_lang, !isTranslated);
-                break;
-
-              case 2:
-                console.log("Translating with Gemini: ", textToTranslate);
-                if (!isTranslated) {
-                  // translating
-                  result = await Gemini.translate(textToTranslate, target_lang);
-                } else {
-                  // reverting
-                  result = { text: "" };
+                    // عرض النتيجة (يمكن تغييرها لتظهر كنافذة منبثقة لاحقاً)
+                    showToast(translatedText, getAssetIDByName("Check"));
+                    
+                    // (اختياري) إذا كنت تريد إرسال الترجمة كرسالة، سنحتاج لكود إضافي هنا
                 }
-                break;
+            };
 
-              default:
-                showToast("Unknown translator selected.", getAssetIDByName("Small"));
-                return;
-            }
-
-            // If revert, just restore cached original
-            const translatedTextRaw = isTranslated ? (result?.text ?? "") : "";
-
-            let translatedText = translatedTextRaw;
-            placeholders.forEach((original, index) => {
-              const pRegex = new RegExp(`\\[\\[\\s*${index}\\s*\\]\\]`, "g");
-              translatedText = translatedText.replace(pRegex, original);
-            });
-
-            const finalContent = isTranslated
-              ? (
-                isImmersive
-                  ? `${messageContent}${separator}${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
-                  : `${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
-              )
-              : (existingCachedObject as any)[messageId];
-
-            FluxDispatcher.dispatch({
-              type: "MESSAGE_UPDATE",
-              message: {
-                id: messageId,
-                channel_id: originalMessage.channel_id,
-                guild_id: ChannelStore.getChannel(originalMessage.channel_id)?.guild_id,
-                content: finalContent
-              },
-              log_edit: false,
-              otherPluginBypass: true // antied
-            });
-
-            isTranslated
-              ? cachedData.unshift({ [messageId]: messageContent })
-              : (cachedData = cachedData.filter((e: any) => e !== existingCachedObject, "cached data override"));
-          } catch (e: any) {
-            if (String(e?.message ?? e).includes("NO_GEMINI_KEY")) {
-              showToast("حط Gemini API Key في Settings تاع البلوقين", getAssetIDByName("Small"));
-              return;
-            }
-            showToast("Failed to translate message. Please check Debug Logs for more info.", getAssetIDByName("Small"));
+            // وضع الزر في بداية القائمة
+            buttons.unshift(translateButton);
+        });
+    });
+}
             logger.error(e);
           }
         };
