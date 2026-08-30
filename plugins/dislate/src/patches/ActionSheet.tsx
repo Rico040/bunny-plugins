@@ -1,5 +1,5 @@
 import { findByProps, findByStoreName } from "@vendetta/metro"
-import { FluxDispatcher, React, ReactNative, i18n, stylesheet } from "@vendetta/metro/common"
+import { FluxDispatcher, React, ReactNative, stylesheet } from "@vendetta/metro/common"
 import { before, after } from "@vendetta/patcher"
 import { semanticColors } from "@vendetta/ui"
 import { getAssetIDByName } from "@vendetta/ui/assets"
@@ -12,7 +12,7 @@ import { showToast } from "@vendetta/ui/toasts"
 import { logger } from "@vendetta"
 
 const LazyActionSheet = findByProps("openLazy", "hideActionSheet")
-const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow // no icon if legacy
+const ActionSheetRow = findByProps("ActionSheetRow")?.ActionSheetRow ?? Forms.FormRow
 const MessageStore = findByStoreName("MessageStore")
 const ChannelStore = findByStoreName("ChannelStore")
 const separator = "\n"
@@ -30,14 +30,16 @@ let cachedData: object[] = []
 export default () => before("openLazy", LazyActionSheet, ([component, key, msg]) => {
     const message = msg?.message
     if (key !== "MessageLongPressActionSheet" || !message) return
-    component.then(instance => {
-        const unpatch = after("default", instance, (_, component) => {
+
+    component.then((instance: any) => {
+        const unpatch = after("default", instance, (_: any, component: any) => {
             React.useEffect(() => () => { unpatch() }, [])
 
-            // this thing is not backward compatible
-            const buttons = findInReactTree(component, x => x?.[0]?.type?.name === "ActionSheetRow")
-            if (!buttons) return
-            const position = Math.max(buttons.findIndex((x: any) => x.props.message === i18n.Messages.MARK_UNREAD), 0)
+            // Safely locate action sheet row groups to prevent Metro index crashes
+            const groups: any[] = findInReactTree(
+                component,
+                (c: any) => Array.isArray(c) && c[0]?.type?.name === "ActionSheetRowGroup"
+            )
 
             const originalMessage = MessageStore.getMessage(
                 message.channel_id,
@@ -47,7 +49,7 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
 
             const messageId = originalMessage?.id ?? message.id
             const messageContent = originalMessage?.content ?? message.content
-            const existingCachedObject = cachedData.find((o: any) => Object.keys(o)[0] === messageId, "cache object")
+            const existingCachedObject = cachedData.find((o: any) => Object.keys(o)[0] === messageId)
 
             const translateType = existingCachedObject ? "Revert" : "Translate"
             const icon = translateType === "Translate" ? getAssetIDByName("LanguageIcon") : getAssetIDByName("ic_highlight")
@@ -58,38 +60,38 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                     const target_lang = settings.target_lang
                     const isTranslated = translateType === "Translate"
                     const isImmersive = settings.immersive_enabled
-                    
+
                     if (!originalMessage) return
 
                     const emojiRegex = /<(a?):\w+:\d+>|<@!?\d+>|<#\d+>/g
                     const placeholders: string[] = []
-                    const textToTranslate = messageContent.replace(emojiRegex, (match) => {
+                    const textToTranslate = messageContent.replace(emojiRegex, (match: string) => {
                         placeholders.push(match)
                         return ` [[${placeholders.length - 1}]] `
                     })
-                    var translate
+                    
+                    let translateResult
                     switch(settings.translator) {
                         case 0:
-                            console.log("Translating with DeepL: ", textToTranslate)
-                            translate = await DeepL.translate(textToTranslate, undefined, target_lang, !isTranslated)
+                            translateResult = await DeepL.translate(textToTranslate, undefined, target_lang, !isTranslated)
                             break
                         case 1:
-                            console.log("Translating with GTranslate: ", textToTranslate)
-                            translate = await GTranslate.translate(textToTranslate, undefined, target_lang, !isTranslated)
+                            translateResult = await GTranslate.translate(textToTranslate, undefined, target_lang, !isTranslated)
                             break
                     }
-                    
-                    let translatedText = translate.text
+
+                    let translatedText = translateResult.text
                     placeholders.forEach((original, index) => {
                         const pRegex = new RegExp(`\\[\\[\\s*${index}\\s*\\]\\]`, 'g')
                         translatedText = translatedText.replace(pRegex, original)
                     })
 
                     const finalContent = isTranslated
-                                ? (isImmersive
-                                    ? `${messageContent}${separator}${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
-                                    : `${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``)
-                                : (existingCachedObject as object)[messageId]
+                        ? (isImmersive
+                            ? `${messageContent}${separator}${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``
+                            : `${translatedText.trim()} \`[${target_lang?.toLowerCase()}]\``)
+                        : (existingCachedObject as any)[messageId]
+
                     FluxDispatcher.dispatch({
                         type: "MESSAGE_UPDATE",
                         message: {
@@ -99,37 +101,56 @@ export default () => before("openLazy", LazyActionSheet, ([component, key, msg])
                             content: finalContent,
                         },
                         log_edit: false,
-                        otherPluginBypass: true // antied
+                        otherPluginBypass: true
                     })
 
-                    isTranslated
-                        ? cachedData.unshift({ [messageId]: messageContent })
-                        : cachedData = cachedData.filter((e: any) => e !== existingCachedObject, "cached data override")
+                    if (isTranslated) {
+                        cachedData.unshift({ [messageId]: messageContent })
+                    } else {
+                        cachedData = cachedData.filter((e: any) => e !== existingCachedObject)
+                    }
                 } catch (e) {
                     showToast("Failed to translate message. Please check Debug Logs for more info.", getAssetIDByName("Small"))
                     logger.error(e)
                 }
             }
 
-
-            buttons.splice(position, 0, (
-                <ActionSheetRow
-                    label={`${translateType} Message`}
-                    icon={
-                        <ActionSheetRow.Icon
+            const translateRow = React.createElement(ActionSheetRow, {
+                label: `${translateType} Message`,
+                icon: React.createElement(ActionSheetRow.Icon, {
+                    source: icon,
+                    IconComponent: () => (
+                        <ReactNative.Image
+                            resizeMode="cover"
+                            style={styles.iconComponent}
                             source={icon}
-                            IconComponent={() => (
-                                <ReactNative.Image
-                                    resizeMode="cover"
-                                    style={styles.iconComponent}
-                                    source={icon}
-                                />
-                            )}
                         />
+                    )
+                }),
+                onPress: translate
+            })
+
+            // Inject into the first valid ActionSheetRow array inside groups
+            if (groups?.length) {
+                for (let gi = 0; gi < groups.length; gi++) {
+                    const groupChildren: any[] = findInReactTree(
+                        groups[gi],
+                        (c: any) => Array.isArray(c) && c.some((child: any) => child?.type?.name === "ActionSheetRow")
+                    )
+                    if (groupChildren) {
+                        groupChildren.unshift(translateRow)
+                        return
                     }
-                    onPress={translate}
-                />
-            ))
+                }
+            }
+
+            // Fallback injection if tree searching fails
+            const buttons = findInReactTree(component, (x: any) => Array.isArray(x) && x[0]?.type?.name === "ActionSheetRow")
+            if (buttons) {
+                buttons.unshift(translateRow)
+            }
         })
+    }).catch((err: any) => {
+        logger.error("[Translate] Failed to open LazyActionSheet:", err)
     })
 })
